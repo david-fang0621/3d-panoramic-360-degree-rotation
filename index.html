@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Panoramic 360 Degree Rotation</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Mr+Dafoe&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Exo:wght@900&display=swap");
+
+      * {
+        outline: none;
+        margin: 0;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
+      #webgl-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .overlay {
+        position: absolute;
+        left: 1rem;
+        top: 0.5rem;
+      }
+      h1 {
+        position: relative;
+        font-family: "Exo";
+        font-size: 5em;
+        margin: 0;
+        transform: skew(-15deg);
+        letter-spacing: 0.03em;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        top: -0.1em;
+        right: 0.05em;
+        width: 0.4em;
+        height: 0.4em;
+        background: radial-gradient(
+            white 3%,
+            rgba(white, 0.3) 15%,
+            rgba(white, 0.05) 60%,
+            transparent 80%
+          ),
+          radial-gradient(rgba(white, 0.2) 50%, transparent 60%) 50% 50% / 5%
+            100%,
+          radial-gradient(rgba(white, 0.2) 50%, transparent 60%) 50% 50% / 70%
+            5%;
+        background-repeat: no-repeat;
+      }
+
+      span:first-child {
+        display: block;
+        text-shadow: 0 0 0.1em #8ba2d0, 0 0 0.2em black, 0 0 5em #165ff3;
+        -webkit-text-stroke: 0.06em rgba(black, 0.5);
+      }
+
+      span:last-child {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-image: linear-gradient(
+          #300606 25%,
+          #8d0e0e 35%,
+          #702121 50%,
+          #20125f 50%,
+          #ef9103 55%,
+          #423204 75%
+        );
+        -webkit-text-stroke: 0.01em #94a0b9;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      h3 {
+        color: white;
+        font-size: 3em;
+        font-style: italic;
+      }
+
+      .animated-button2 {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(-30deg, #3d240b 50%, #2b1a08 50%);
+        padding: 20px 40px;
+        margin: 12px;
+        display: inline-block;
+        -webkit-transform: translate(0%, 0%);
+        transform: translate(0%, 0%);
+        overflow: hidden;
+        color: #f7e6d4;
+        font-size: 20px;
+        letter-spacing: 2.5px;
+        text-align: center;
+        text-transform: uppercase;
+        text-decoration: none;
+        -webkit-box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+
+      .animated-button2::before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: #ad9985;
+        opacity: 0;
+        -webkit-transition: 0.2s opacity ease-in-out;
+        transition: 0.2s opacity ease-in-out;
+      }
+
+      .animated-button2:hover::before {
+        opacity: 0.2;
+      }
+
+      .animated-button2 span {
+        position: absolute;
+      }
+
+      .animated-button2 span:nth-child(1) {
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 2px;
+        background: -webkit-gradient(
+          linear,
+          right top,
+          left top,
+          from(rgba(43, 26, 8, 0)),
+          to(#d98026)
+        );
+        background: linear-gradient(to left, rgba(43, 26, 8, 0), #d98026);
+        -webkit-animation: 2s animateTop linear infinite;
+        animation: 2s animateTop linear infinite;
+      }
+
+      @keyframes animateTop {
+        0% {
+          -webkit-transform: translateX(100%);
+          transform: translateX(100%);
+        }
+        100% {
+          -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+        }
+      }
+
+      .animated-button2 span:nth-child(2) {
+        top: 0px;
+        right: 0px;
+        height: 100%;
+        width: 2px;
+        background: -webkit-gradient(
+          linear,
+          left bottom,
+          left top,
+          from(rgba(43, 26, 8, 0)),
+          to(#d98026)
+        );
+        background: linear-gradient(to top, rgba(43, 26, 8, 0), #d98026);
+        -webkit-animation: 2s animateRight linear -1s infinite;
+        animation: 2s animateRight linear -1s infinite;
+      }
+
+      @keyframes animateRight {
+        0% {
+          -webkit-transform: translateY(100%);
+          transform: translateY(100%);
+        }
+        100% {
+          -webkit-transform: translateY(-100%);
+          transform: translateY(-100%);
+        }
+      }
+
+      .animated-button2 span:nth-child(3) {
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        height: 2px;
+        background: -webkit-gradient(
+          linear,
+          left top,
+          right top,
+          from(rgba(43, 26, 8, 0)),
+          to(#d98026)
+        );
+        background: linear-gradient(to right, rgba(43, 26, 8, 0), #d98026);
+        -webkit-animation: 2s animateBottom linear infinite;
+        animation: 2s animateBottom linear infinite;
+      }
+
+      @keyframes animateBottom {
+        0% {
+          -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+        }
+        100% {
+          -webkit-transform: translateX(100%);
+          transform: translateX(100%);
+        }
+      }
+
+      .animated-button2 span:nth-child(4) {
+        top: 0px;
+        left: 0px;
+        height: 100%;
+        width: 2px;
+        background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          from(rgba(43, 26, 8, 0)),
+          to(#d98026)
+        );
+        background: linear-gradient(to bottom, rgba(43, 26, 8, 0), #d98026);
+        -webkit-animation: 2s animateLeft linear -1s infinite;
+        animation: 2s animateLeft linear -1s infinite;
+      }
+
+      @keyframes animateLeft {
+        0% {
+          -webkit-transform: translateY(-100%);
+          transform: translateY(-100%);
+        }
+        100% {
+          -webkit-transform: translateY(100%);
+          transform: translateY(100%);
+        }
+      }
+    </style>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+      integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://unpkg.com/typeit@8.5.4/dist/index.umd.js"></script>
+  </head>
+  <body>
+    <div id="webgl-container"></div>
+    <div class="overlay">
+      <h1>
+        <span>Panoramic 360 Degree Rotation</span>
+        <span>Panoramic 360 Degree Rotation</span>
+      </h1>
+      <h3>By david-fang0621</h3>
+    </div>
+    <a href="#" class="animated-button2">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      Main Page
+    </a>
+  </body>
+  <script>
+    let camera, scene, renderer;
+
+    let isUserInteracting = false,
+      onPointerDownMouseX = 0,
+      onPointerDownMouseY = 0,
+      lon = 0,
+      onPointerDownLon = 0,
+      lat = 0,
+      onPointerDownLat = 0,
+      phi = 0,
+      theta = 0;
+
+    init();
+    animate();
+
+    function init() {
+      const container = document.getElementById("webgl-container");
+
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        1,
+        1100
+      );
+
+      scene = new THREE.Scene();
+
+      const geometry = new THREE.SphereGeometry(500, 60, 40);
+      // invert the geometry on the x-axis so that all of the faces point inward
+      geometry.scale(-1, 1, 1);
+
+      const texture = new THREE.TextureLoader().load("image.jpg");
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+
+      const mesh = new THREE.Mesh(geometry, material);
+
+      scene.add(mesh);
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
+
+      container.style.touchAction = "none";
+      container.addEventListener("pointerdown", onPointerDown);
+
+      document.addEventListener("wheel", onDocumentMouseWheel);
+
+      //
+
+      document.addEventListener("dragover", function (event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+      });
+
+      document.addEventListener("dragenter", function () {
+        document.body.style.opacity = 0.5;
+      });
+
+      document.addEventListener("dragleave", function () {
+        document.body.style.opacity = 1;
+      });
+
+      document.addEventListener("drop", function (event) {
+        event.preventDefault();
+
+        const reader = new FileReader();
+        reader.addEventListener("load", function (event) {
+          material.map.image.src = event.target.result;
+          material.map.needsUpdate = true;
+        });
+        reader.readAsDataURL(event.dataTransfer.files[0]);
+
+        document.body.style.opacity = 1;
+      });
+
+      window.addEventListener("resize", onWindowResize);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function onPointerDown(event) {
+      if (event.isPrimary === false) return;
+
+      isUserInteracting = true;
+
+      onPointerDownMouseX = event.clientX;
+      onPointerDownMouseY = event.clientY;
+
+      onPointerDownLon = lon;
+      onPointerDownLat = lat;
+
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+    }
+
+    function onPointerMove(event) {
+      if (event.isPrimary === false) return;
+
+      lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
+      lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+    }
+
+    function onPointerUp() {
+      if (event.isPrimary === false) return;
+
+      isUserInteracting = false;
+
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
+    }
+
+    function onDocumentMouseWheel(event) {
+      const fov = camera.fov + event.deltaY * 0.05;
+
+      camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
+
+      camera.updateProjectionMatrix();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      update();
+    }
+
+    function update() {
+      if (isUserInteracting === false) {
+        lon += 0.1;
+      }
+
+      lat = Math.max(-85, Math.min(85, lat));
+      phi = THREE.MathUtils.degToRad(90 - lat);
+      theta = THREE.MathUtils.degToRad(lon);
+
+      const x = 500 * Math.sin(phi) * Math.cos(theta);
+      const y = 500 * Math.cos(phi);
+      const z = 500 * Math.sin(phi) * Math.sin(theta);
+
+      camera.lookAt(x, y, z);
+
+      renderer.render(scene, camera);
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      setInterval(function () {
+        new TypeIt(".overlay h3", {
+          speed: 50,
+          cursor: false,
+        }).go();
+      }, 3000);
+    });
+  </script>
+</html>
